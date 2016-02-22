@@ -1,0 +1,3 @@
+For now only using .osx configuration.
+
+Check other osx setup repo too.

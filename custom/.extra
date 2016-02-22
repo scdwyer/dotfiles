@@ -1,0 +1,11 @@
+# Some extra things not in dotfiles repo
+
+# extra aliases
+# Add lsusb equivalent (not as nice)
+alias lsusb='system_profiler SPUSBDataType'
+# Add lsdev to list usb devices
+alias lsdev='ls /dev/*usb*'
+# Preview with quicklook from cmd line
+alias quick='qlmanage -p'
+# Rename all files in the directory and replace spaces with underscores
+alias rename_underscores='ls -1 | while read file; do new_file=$(echo $file |sed s/\ /_/g); mv "$file" "$new_file"; done'
