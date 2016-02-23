@@ -1,2 +1,3 @@
 # Extra path additions not in dotfiles repo
 # ADD export PATH=/path/to/gcc-arm-embedded/blablabla/bin:$PATH
+export PATH="/usr/local/sbin:$PATH";
