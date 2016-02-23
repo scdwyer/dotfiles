@@ -1,0 +1,17 @@
+[user]
+	name = Stephen Dwyer
+	email = scdwyer@ualberta.ca
+[color]
+	diff = auto
+	status = auto
+	branch = auto
+	ui = auto
+[alias]
+	st = status
+	co = checkout
+	ci = commit
+	br = branch
+	up = pull --rebase
+[core]
+	autocrlf = input
+	editor = /usr/bin/vim
