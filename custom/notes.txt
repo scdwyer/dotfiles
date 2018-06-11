@@ -1,3 +1,136 @@
-For now only using .osx configuration.
-
 Check other osx setup repo too.
+
+FROM https://joernhees.de/blog/2014/02/25/scientific-python-on-mac-os-x-10-9-with-homebrew/
+------------------------------------------------------
+Scientific Python on Mac OS X 10.9+ with homebrew
+
+This is a step-by-step installation guide to setup a scientific python environment on Mac OS X 10.9+ Mavericks / Yosemite / El Capitain with homebrew.
+An older version of this setup guide can be found here: Scientific Python on Mac OS X 10.8 with homebrew, main changes: rename of a tap + changes wrt. openblas as Accelerate was fixed in OS X 10.9
+
+Needless to say: Make a backup (Timemachine)
+
+First install homebrew.
+Follow their instructions, then come back here.
+
+If you don’t have a clean install, some of the following steps might need minor additional attention (like changing permissions chmod, chown, chgrp or overwriting existing files in the linking step with brew link --overwrite package_that_failed. In this case i can only recommend a backup again).
+
+In general: execute the following commands one line at a time and read the outputs! If you read some warnings about “keg-only” that’s fine, it just means that brew won’t “hide” your system’s stuff behind the stuff it installed itself so it doesn’t cause problems… brewed stuff will still use it.
+
+	# set up some taps and update brew
+	brew tap homebrew/science # a lot of cool formulae for scientific tools
+	brew tap homebrew/python # numpy, scipy, matplotlib, ...
+	brew update && brew upgrade
+
+	# install a brewed python
+	brew install python
+
+A word about brewed python: this is what you want!
+
+It’s more up to date than the system python, it will come with pip and correctly install in the brew directories, working together well with brewed python libs that aren’t installable with plain pip. This also means that pip by default will work without sudo as all of homebrew, so if you ever run or have to run sudo pip ... because of missing permissions, then you’re doing it wrong! Also, don’t be afraid of multiple pythons on your system: you have them anyhow (python2 and python3) and it’s an advantage, as we’ll make sure that nothing poisons your system python and that you as a user & developer will use the brewed python:
+
+	hash -r python  # invalidate bash's lookup cache for python
+	which python
+	# should say /usr/local/bin/python
+
+	echo $PATH
+	# /usr/local/bin should appear in front of /usr/bin
+
+If this is not the case you’d probably end up not using brewed python. Please check your brew install with brew doctor, it will probably tell you that you should consider updating your paths in ~/.bashrc. You can either follow its directions or create a ~/.profile file like this one: ~/.profile. If you performed these steps, please close your terminal windows and open a new one for the changes to take effect. Test the above again.
+
+Even if the above check worked, run the following anyhow and read through its output (no output is good):
+
+	brew doctor
+Pay special attention if this tells you to install XQuartz, and if it does, install it! You’ll need it anyhow…
+
+Now after these preparations, let’s really start installing stuff… below you’ll mostly find one package / lib per line. For each of them and for their possible options: they’re a recommendation that might save you some trouble, so i’d recommend to install all of them as i write here, even if specifying some of the options will compile brew packages from source and take a bit longer…
+
+	# install PIL, imagemagick, graphviz and other
+	# image generating stuff
+	brew install libtiff libjpeg webp little-cms2
+	pip install Pillow
+	brew install imagemagick --with-fftw --with-librsvg --with-x11
+	brew install graphviz --with-librsvg --with-x11
+	brew install cairo
+	brew install py2cairo # this will ask you to download xquartz and install it
+	brew install qt pyqt
+	##### .app bundles were installed.
+    ##### Run `brew linkapps qt` to symlink these to /Applications.
+
+	# install virtualenv, nose (unittests & doctests on steroids)
+	pip install virtualenv
+	pip install nose
+
+	# install numpy and scipy
+	# there are two ways to install numpy and scipy now: via pip or via brew.
+	# PICK ONE, i prefer pip for proper virtualenv support and more up-to-date versions.
+	pip install numpy
+	pip install scipy
+	# OR:
+	# (if you want to run numpy and scipy with openblas also remove comments below:)
+	#brew install openblas
+	brew install numpy # --with-openblas
+	brew install scipy # --with-openblas
+
+	# test the numpy & scipy install
+	python -c 'import numpy ; numpy.test();'
+	python -c 'import scipy ; scipy.test();'
+
+	##### pip install pyserial
+
+	# some cool python libs (if you don't know them, look them up)
+	# matplotlib: generate plots
+	# pandas: time series stuff
+	# nltk: natural language toolkit
+	# sympy: symbolic maths in python
+	# q: fancy debugging output
+	# snakeviz: cool visualization of profiling output (aka what's taking so long?)
+	#brew install Caskroom/cask/mactex  # if you want to install matplotlib with tex support and don't have mactex installed already
+	brew install matplotlib --with-cairo --with-tex  # cairo: png ps pdf svg filetypes, tex: tex fonts & formula in plots
+	pip install pandas
+	pip install nltk
+	pip install sympy
+	pip install q
+	pip install snakeviz
+
+	# ipython with parallel and notebook support
+	brew install zmq
+	pip install ipython[all]
+
+	# html stuff (parsing)
+	pip install html5lib cssselect pyquery lxml BeautifulSoup
+
+	# webapps / apis (choose what you like)
+	pip install Flask Django tornado
+
+	# semantic web stuff: rdf & sparql
+	pip install rdflib SPARQLWrapper
+
+	# graphs (graph metrics, social network analysis, layouting)
+	pip install networkx
+
+	# maintenance: updating of pip libs
+	pip list --outdated  # see Updating section below
+Have fun 😉
+
+Updating
+
+OK, let’s say it’s been a while since you installed things with this guide and you now want to update all the installed libs. To do this you should first upgrade everything installed with brew like this:
+
+	brew update && brew outdated && brew upgrade --all
+Afterwards for upgrading pip packages (globally or in a virtualenv) you can just run
+
+	pip list --outdated
+to get a list of outdated packages and then manually update them with:
+
+	pip install -U package1 package2 ...
+If you want a tiny bit more comfort you can use the pip-review package to do this interactively:
+
+	pip install pip-review
+Once installed you should be able to run the following either in a virtualenv or globally for your whole system:
+
+	pip-review -i # for interactive mode, -a to upgrade all which is dangerous
+It will check your installed packages for new versions and give you a list of outdated packages. I’d recommend to run it with the -i option to interactively install the upgrades.
+
+A word of warning about the brewed packages: If i recommended to install a package with brew above that’s usually for a good reason like the pip version not working properly. If you’re a bit more advanced, you can try to upgrade them with pip, but i’d recommend to properly unlink them with brew unlink <package> before, as some pip packages might run into problems otherwise. If you find the pip package works like a charm then, please let me know in the comments below so i can update this guide. In general i prefer the pip packages as they’re more up to date, work in virtual environments and can then easily be updated with pip-review.
+
+As always: If you liked this, think something is missing or wrong leave a comment.
