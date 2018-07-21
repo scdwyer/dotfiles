@@ -93,5 +93,12 @@ brew install tree
 brew install vbindiff
 brew install zopfli
 
+# From me
+brew install gerbv
+brew install gnused
+brew install graphviz
+brew install gnuplot
+brew install libusb
+
 # Remove outdated versions from the cellar.
 brew cleanup
