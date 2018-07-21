@@ -1,4 +1,9 @@
 [alias]
+	# From Paparazzi Autopilot
+	st = status
+	co = checkout
+	br = branch
+	lg = "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative"
 
 	# View abbreviated SHA, description, and history graph of the latest 20 commits
 	l = log --pretty=oneline -n 20 --graph --abbrev-commit
@@ -85,6 +90,9 @@
 	whitespace = fix
 
 [core]
+
+	# From PPRZ
+	autocrlf = input
 
 	# Use custom `.gitignore` and `.gitattributes`
 	excludesfile = ~/.gitignore
